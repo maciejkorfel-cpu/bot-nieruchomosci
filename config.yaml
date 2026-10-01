@@ -1,0 +1,112 @@
+# ===== Bot nieruchomości – konfiguracja =====
+# Lokale handlowe / pawilony / budynki do 400 tys. zł
+#   1) województwa śląskie + małopolskie
+#   2) cała Polska (oferty już wysłane w części 1 nie przychodzą drugi raz)
+
+telegram:
+  token: "WKLEJ_TUTAJ_TOKEN_OD_BOTFATHER"   # w GitHubie token jest w sekretach – tu nic nie wpisuj
+  chat_id: "WKLEJ_TUTAJ_CHAT_ID"
+
+interval_minutes: 20
+max_new_per_run: 25
+
+# ---------- wspólne ustawienia filtrów (używane niżej przez *nazwa) ----------
+wspolne:
+  wyklucz: &wyklucz ["licytacja", "komornicz", "1/2 udziału", "udział 1/2", "wynajmę lokal", "oddam w dzierżawę"]
+  grunt: &grunt ["działk", "grunt", "wolnostoj", "z ziemią", "plac ", "parking własny"]
+  budynek: &budynek ["budynek", "kamienica", "obiekt", "wolnostoj", "cały pawilon"]
+
+  f_lokal: &f_lokal              # lokal / pawilon: 60–150 m² (cały budynek może być większy)
+    price_min: 20000             # odcina ogłoszenia najmu (czynsz miesięczny)
+    price_max: 400000
+    area_min: 60
+    area_max: 150
+    area_max_ignore_if_any: *budynek
+    exclude_any: *wyklucz
+    highlight_any: *grunt        # ⭐ w powiadomieniu, gdy w ofercie jest grunt / działka
+    require_known: false
+
+  f_budynek: &f_budynek          # budynek / dom: od 60 m² w górę
+    price_min: 20000
+    price_max: 400000
+    area_min: 60
+    exclude_any: *wyklucz
+    highlight_any: *grunt
+    require_known: false
+
+  f_pawilon: &f_pawilon          # wyszukiwanie po słowie (OLX) – oferta musi wspominać pawilon / lokal handlowy
+    price_min: 20000
+    price_max: 400000
+    area_min: 60
+    area_max: 150
+    area_max_ignore_if_any: *budynek
+    include_any: ["pawilon", "lokal handlowy", "lokal usługowy", "lokal użytkowy", "sklep", "budynek handlowy", "budynek usługowy"]
+    exclude_any: *wyklucz
+    highlight_any: *grunt
+    require_known: false
+
+searches:
+  # ================= 1) ŚLĄSKIE + MAŁOPOLSKIE =================
+  - name: "ŚL/MP · Lokal 60–150 m²"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/lokal/slaskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/lokal/malopolskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/biura-i-lokale/sprzedaz/slaskie/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/biura-i-lokale/sprzedaz/malopolskie/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.domiporta.pl/lokal-uzytkowy/sprzedam/slaskie"
+      - "https://www.domiporta.pl/lokal-uzytkowy/sprzedam/malopolskie"
+      - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/slaskie/sprzedaz?sort=newest"
+      - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/malopolskie/sprzedaz?sort=newest"
+      - "https://www.morizon.pl/lokale/slaskie/"
+      - "https://www.morizon.pl/lokale/malopolskie/"
+    filters: *f_lokal
+
+  - name: "ŚL/MP · Budynek/dom 60+ m²"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/slaskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/domy/sprzedaz/slaskie/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/domy/sprzedaz/malopolskie/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.domiporta.pl/dom/sprzedam/slaskie"
+      - "https://www.domiporta.pl/dom/sprzedam/malopolskie"
+      - "https://gratka.pl/nieruchomosci/domy/slaskie/sprzedaz?sort=newest"
+      - "https://gratka.pl/nieruchomosci/domy/malopolskie/sprzedaz?sort=newest"
+      - "https://www.morizon.pl/domy/slaskie/"
+      - "https://www.morizon.pl/domy/malopolskie/"
+      - "https://adresowo.pl/domy/slaskie/"
+      - "https://adresowo.pl/domy/malopolskie/"
+    filters: *f_budynek
+
+  - name: "ŚL/MP · Pawilon (słowo w ofercie)"
+    urls:
+      - "https://www.olx.pl/nieruchomosci/slaskie/q-pawilon/?search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/malopolskie/q-pawilon/?search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/slaskie/q-lokal-handlowy/?search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/malopolskie/q-lokal-handlowy/?search%5Border%5D=created_at:desc"
+    filters: *f_pawilon
+
+  # ================= 2) CAŁA POLSKA =================
+  - name: "PL · Lokal 60–150 m²"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/lokal/cala-polska?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/biura-i-lokale/sprzedaz/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.domiporta.pl/lokal-uzytkowy/sprzedam"
+      - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/sprzedaz?sort=newest"
+      - "https://www.morizon.pl/lokale/"
+    filters: *f_lokal
+
+  - name: "PL · Budynek/dom 60+ m²"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/cala-polska?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/domy/sprzedaz/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
+      - "https://www.domiporta.pl/dom/sprzedam"
+      - "https://gratka.pl/nieruchomosci/domy/sprzedaz?sort=newest"
+      - "https://www.morizon.pl/domy/"
+      - "https://adresowo.pl/domy/"
+    filters: *f_budynek
+
+  - name: "PL · Pawilon (słowo w ofercie)"
+    urls:
+      - "https://www.olx.pl/nieruchomosci/q-pawilon/?search%5Border%5D=created_at:desc"
+      - "https://www.olx.pl/nieruchomosci/q-lokal-handlowy/?search%5Border%5D=created_at:desc"
+    filters: *f_pawilon
