@@ -1,0 +1,44 @@
+# ===== Bot nieruchomości – konfiguracja =====
+
+telegram:
+  token: "WKLEJ_TUTAJ_TOKEN_OD_BOTFATHER"
+  chat_id: "WKLEJ_TUTAJ_CHAT_ID"
+
+interval_minutes: 20      # co ile minut sprawdzać (nie schodź poniżej ~10)
+max_new_per_run: 25       # limit nowych ofert sprawdzanych w jednym przebiegu na link
+
+# Każde wyszukiwanie = nazwa + linki z portali + filtry.
+# JAK ZDOBYĆ LINK: wejdź na portal, ustaw filtry (miasto, cena, metraż...),
+# ustaw sortowanie „najnowsze”, skopiuj adres z paska przeglądarki i wklej poniżej.
+# Filtry w sekcji "filters" to druga, dokładniejsza warstwa sprawdzana przez bota.
+
+searches:
+  - name: "Mieszkanie do 500 tys."
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/mazowieckie/warszawa/warszawa/warszawa?by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/mieszkania/sprzedaz/warszawa/?search%5Border%5D=created_at:desc"
+      # - "wklej link z Gratki"
+      # - "wklej link z Nieruchomosci-online"
+      # - "wklej link z Morizon"
+      # - "wklej link z Adresowo"
+      # - "wklej link z Domiporty"
+    filters:
+      price_min:            # puste = bez limitu
+      price_max: 500000
+      area_min: 35
+      area_max:
+      price_per_m2_min:
+      price_per_m2_max: 13000
+      rooms_min: 2
+      rooms_max:
+      include_any: []       # oferta musi zawierać CHOCIAŻ JEDNO, np. ["balkon", "taras"]
+      exclude_any: ["licytacja", "udział w", "tbs"]   # odrzuć, jeśli zawiera którekolwiek
+      require_known: false  # true = odrzucaj oferty, z których nie dało się odczytać ceny/metrażu
+
+  # Drugie wyszukiwanie – odkomentuj i dostosuj:
+  # - name: "Działka budowlana"
+  #   urls:
+  #     - "..."
+  #   filters:
+  #     price_max: 200000
+  #     area_min: 800
