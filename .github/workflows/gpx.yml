@@ -1,0 +1,17 @@
+name: Jednorazowo - GPX trasy
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  gpx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install requests
+      - run: python trasy/make_gpx.py
+      - run: |
+          git config user.name "bot-nieruchomosci"
+          git config user.email "bot@users.noreply.github.com"
+          git add trasy/petla_nowy_targ.gpx trasy/raport.json
+          git commit -m "GPX: pętla Nowy Targ" && git pull --rebase && git push
