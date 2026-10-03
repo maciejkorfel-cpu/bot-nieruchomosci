@@ -12,7 +12,8 @@ max_new_per_run: 25
 
 # ---------- wspólne ustawienia filtrów (używane niżej przez *nazwa) ----------
 wspolne:
-  wyklucz: &wyklucz ["licytacja", "komornicz", "1/2 udziału", "udział 1/2", "wynajmę lokal", "oddam w dzierżawę"]
+  wyklucz: &wyklucz ["licytacja", "komornicz", "1/2 udziału", "udział 1/2", "wynajmę lokal", "oddam w dzierżawę",
+                     "kontener", "producent", "leasing", "szybka realizacja", "na zamówienie", "moduł"]
   grunt: &grunt ["działk", "grunt", "wolnostoj", "z ziemią", "plac ", "parking własny"]
   budynek: &budynek ["budynek", "kamienica", "obiekt", "wolnostoj", "cały pawilon"]
 
@@ -33,7 +34,7 @@ wspolne:
     # z kategorii „domy” przechodzą tylko oferty, których tytuł/opis wskazuje na funkcję handlowo-usługową
     include_any: ["usługow", "handlow", "komercyjn", "lokal użytkowy", "lokal usługowy", "lokal handlowy",
                   "pawilon", "sklep", "budynek użytkowy", "biurow", "magazynow", "produkcyjn",
-                  "działalnoś", "warsztat", "hala"]
+                  "działalnoś", "warsztat", " hala ", " hali ", "halę"]
     exclude_any: *wyklucz
     highlight_any: *grunt
     require_known: false
