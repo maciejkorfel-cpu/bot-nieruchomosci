@@ -1,3 +1,109 @@
 {
- "ERROR": "Traceback (most recent call last):\n  File \"/usr/lib/python3/dist-packages/requests/models.py\", line 971, in json\n    return complexjson.loads(self.text, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 136, in <module>\n    main()\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 52, in main\n    SWT = rel_graph(7547982)     # Szlak wokół Tatr\n          ^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 24, in rel_graph\n    els = requests.post(\"https://overpass-api.de/api/interpreter\", data={\"data\": q}, headers=UA, timeout=120).json()[\"elements\"]\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3/dist-packages/requests/models.py\", line 975, in json\n    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)\nrequests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n"
+ "junctions": [
+  {
+   "lat": 49.4559037,
+   "lon": 19.9899535,
+   "nodes": 6
+  },
+  {
+   "lat": 49.4569554,
+   "lon": 19.9957616,
+   "nodes": 4
+  },
+  {
+   "lat": 49.458911,
+   "lon": 20.001378,
+   "nodes": 3
+  },
+  {
+   "lat": 49.4620354,
+   "lon": 20.0088651,
+   "nodes": 2
+  },
+  {
+   "lat": 49.464887,
+   "lon": 20.0157344,
+   "nodes": 10
+  },
+  {
+   "lat": 49.4669576,
+   "lon": 20.0187295,
+   "nodes": 22
+  },
+  {
+   "lat": 49.4698593,
+   "lon": 20.0202934,
+   "nodes": 54
+  },
+  {
+   "lat": 49.4709056,
+   "lon": 20.0242881,
+   "nodes": 18
+  },
+  {
+   "lat": 49.4682917,
+   "lon": 20.0261786,
+   "nodes": 18
+  },
+  {
+   "lat": 49.4667419,
+   "lon": 20.0298378,
+   "nodes": 21
+  },
+  {
+   "lat": 49.4637766,
+   "lon": 20.0297927,
+   "nodes": 10
+  },
+  {
+   "lat": 49.4640397,
+   "lon": 20.0340906,
+   "nodes": 15
+  },
+  {
+   "lat": 49.4668385,
+   "lon": 20.0345119,
+   "nodes": 29
+  }
+ ],
+ "places": {
+  "stacja": [
+   49.4735529,
+   20.0155285
+  ],
+  "waksmund": [
+   49.4814653,
+   20.0785391
+  ],
+  "ostrowsko": [
+   49.4753711,
+   20.0984496
+  ],
+  "lopuszna": [
+   49.478866,
+   20.1328968
+  ],
+  "nowa_biala": [
+   49.440669,
+   20.1439698
+  ],
+  "gronkow": [
+   49.4403034,
+   20.0873249
+  ],
+  "bor": [
+   49.4591233,
+   20.0390178
+  ],
+  "debno": [
+   49.4666498,
+   20.2079069
+  ]
+ },
+ "west_junction": [
+  49.4698593,
+  20.0202934
+ ],
+ "east_junction": null,
+ "ERROR": "Traceback (most recent call last):\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 146, in <module>\n    main()\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 94, in main\n    vd_seq = chain(VD, [west, nearest(VD, P[\"waksmund\"]), nearest(VD, P[\"ostrowsko\"]), nearest(VD, P[\"lopuszna\"]), east])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 90, in chain\n    if s is None: raise SystemExit(f\"brak połączenia {a}->{b}\")\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nSystemExit: brak połączenia (49.4769551, 20.133813)->None\n"
 }
