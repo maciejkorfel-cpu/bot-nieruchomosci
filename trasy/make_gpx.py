@@ -79,8 +79,20 @@ def main():
 
     # styk zachodni = najbliżej stacji, wschodni = najbliżej Nowej Białej / Dębna (na wschód od Łopusznej)
     west = min(clusters, key=lambda c: dist(c[0], P["stacja"]))[0]
-    east_cands = [c[0] for c in clusters if c[0][1] > P["lopuszna"][1] - 0.01]
-    east = min(east_cands, key=lambda n: dist(n, P["nowa_biala"])) if east_cands else None
+    # na wschodzie szlaki nie mają wspólnego węzła – szukamy miejsca, gdzie są najbliżej siebie
+    lim = P["lopuszna"][1] - 0.02
+    vde = [n for n in VD if n[1] > lim and n[0] > 49.40]
+    swe = [n for n in SWT if n[1] > lim and n[0] > 49.40]
+    best = (1e18, None, None)
+    for a in vde[::2]:
+        for b in swe[::2]:
+            d = dist(a, b)
+            if d < best[0]:
+                best = (d, a, b)
+    east_vd, east_swt = best[1], best[2]
+    east = east_vd
+    out["east_gap_m"] = round(best[0])
+    out["east_vd"], out["east_swt"] = east_vd, east_swt
     out["west_junction"], out["east_junction"] = west, east
 
     def chain(g, pts):
@@ -92,8 +104,8 @@ def main():
         return seq
 
     vd_seq = chain(VD, [west, nearest(VD, P["waksmund"]), nearest(VD, P["ostrowsko"]), nearest(VD, P["lopuszna"]), east])
-    swt_seq = chain(SWT, [east, nearest(SWT, P["nowa_biala"]), nearest(SWT, P["gronkow"]), nearest(SWT, P["bor"]), west])
-    loop = vd_seq + swt_seq[1:]
+    swt_seq = chain(SWT, [east_swt, nearest(SWT, P["nowa_biala"]), nearest(SWT, P["gronkow"]), nearest(SWT, P["bor"]), west])
+    loop = vd_seq + swt_seq
 
     def length(s): return sum(dist(a, b) for a, b in zip(s, s[1:]))
     out["vd_km"] = round(length(vd_seq) / 1000, 1); out["swt_km"] = round(length(swt_seq) / 1000, 1)
@@ -131,7 +143,7 @@ def main():
     # GPX: ślad z BRoutera (gęste punkty na szlaku, z wysokościami) + punkty orientacyjne
     trk = "".join(f'<trkpt lat="{c[1]:.6f}" lon="{c[0]:.6f}">' + (f"<ele>{c[2]}</ele>" if len(c) > 2 else "") + "</trkpt>\n" for c in coords)
     names = [("Start/meta: dworzec PKP Nowy Targ", P["stacja"]), ("Waksmund", P["waksmund"]), ("Ostrowsko", P["ostrowsko"]),
-             ("Łopuszna – dwór Tetmajerów", P["lopuszna"]), ("Przejście na Szlak wokół Tatr", east),
+             ("Łopuszna – dwór Tetmajerów", P["lopuszna"]), ("Przejście na Szlak wokół Tatr", east_swt),
              ("Nowa Biała", P["nowa_biala"]), ("Gronków – Cisowa Skała", P["gronkow"]),
              ("Rezerwat Bór na Czerwonem (szuter)", nearest(SWT, P["bor"]))]
     wpt = "".join(f'<wpt lat="{p[0]:.6f}" lon="{p[1]:.6f}"><name>{n}</name></wpt>\n' for n, p in names)
