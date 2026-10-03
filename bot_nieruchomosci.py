@@ -184,6 +184,7 @@ def parse_offer(url, page_html):
     title = meta("og:title") or (soup.title.get_text(strip=True) if soup.title else url)
     desc = meta("og:description", "description") or ""
     price = area = rooms = None
+    full_desc = []   # pełny opis oferty (bez menu, polecanych ofert itp.)
 
     # 1) Otodom i inne strony Next.js – dane w __NEXT_DATA__
     nd = soup.find("script", id="__NEXT_DATA__")
@@ -196,11 +197,14 @@ def parse_offer(url, page_html):
             area = to_num(tgt.get("Area"))
             r = tgt.get("Rooms_num")
             rooms = to_num(r[0] if isinstance(r, list) and r else r)
+            if isinstance(ad, dict):
+                full_desc.append(BeautifulSoup(str(ad.get("description") or ""), "html.parser").get_text(" "))
+                full_desc.append(str(ad.get("title") or ""))
         except Exception:
             pass
 
     # 2) JSON-LD (schema.org)
-    if price is None or area is None:
+    for _ in [0]:
         for s in soup.find_all("script", type="application/ld+json"):
             try:
                 data = json.loads(s.string or "")
@@ -213,9 +217,17 @@ def parse_offer(url, page_html):
                 area = to_num(find_key(fs, ["value"]) if isinstance(fs, dict) else fs)
             if rooms is None:
                 rooms = to_num(find_key(data, ["numberOfRooms"]))
+            d = find_key(data, ["description"])
+            if d:
+                full_desc.append(str(d))
 
     if price is None:
         price = to_num(meta("product:price:amount", "og:price:amount"))
+
+    # OLX i inne: blok z opisem ogłoszenia
+    for el in soup.select('[data-cy="ad_description"], [data-testid="ad_description"], '
+                          '[data-cy="adPageAdDescription"], [itemprop="description"]'):
+        full_desc.append(el.get_text(" ", strip=True))
 
     # 3) Tekst strony (bez menu/stopki)
     for tag in soup(["script", "style", "nav", "footer", "header", "noscript"]):
@@ -235,6 +247,8 @@ def parse_offer(url, page_html):
         "price": price, "area": area, "rooms": rooms,
         "ppm2": (price / area) if price and area else None,
         "text": f"{title} {desc} {body}".lower(),
+        # tylko tytuł + opis – do słów kluczowych, żeby nie łapać linków „podobne oferty”
+        "core": htmllib.unescape(f"{title} {desc} {' '.join(full_desc)}").lower(),
     }
 
 
@@ -256,8 +270,9 @@ def passes(o, f):
         return None
 
     # Limit metrażu "od góry" nie dotyczy np. całych budynków (lista słów w configu)
+    core = o.get("core") or o["text"]
     area_max = f.get("area_max")
-    if area_max is not None and any(w.lower() in o["text"] for w in f.get("area_max_ignore_if_any") or []):
+    if area_max is not None and any(w.lower() in core for w in f.get("area_max_ignore_if_any") or []):
         area_max = None
 
     for reason in (
@@ -270,11 +285,11 @@ def passes(o, f):
             return False, reason
 
     for w in f.get("exclude_any") or []:
-        if w.lower() in o["text"]:
+        if w.lower() in core:
             return False, f"zawiera „{w}”"
     inc = f.get("include_any") or []
-    if inc and not any(w.lower() in o["text"] for w in inc):
-        return False, "brak słów z include_any"
+    if inc and not any(w.lower() in core for w in inc):
+        return False, "brak słów z include_any (tytuł/opis)"
     return True, "ok"
 
 
@@ -301,7 +316,7 @@ def send(cfg, text):
 
 def offer_msg(o, search_name, highlight=None):
     e = htmllib.escape
-    hits = [w for w in (highlight or []) if w.lower() in o["text"]]
+    hits = [w for w in (highlight or []) if w.lower() in (o.get("core") or o["text"])]
     star = "⭐ <b>Grunt / wolnostojący</b>\n" if hits else ""
     line = " · ".join(x for x in [
         fmt(o["price"], " zł") if o["price"] else None,
@@ -387,7 +402,7 @@ def run_once(cfg, db):
                 except Exception as ex:
                     log.warning("Nie udało się otworzyć %s (%s) – wysyłam sam link", u, ex)
                     o = {"url": u, "portal": portal_of(u) or "", "title": "Nowa oferta (brak szczegółów)",
-                         "desc": "", "price": None, "area": None, "rooms": None, "ppm2": None, "text": ""}
+                         "desc": "", "price": None, "area": None, "rooms": None, "ppm2": None, "text": "", "core": ""}
                 ok, why = passes(o, s.get("filters"))
                 if ok:
                     send(cfg, offer_msg(o, name, (s.get("filters") or {}).get("highlight_any")))

@@ -26,10 +26,14 @@ wspolne:
     highlight_any: *grunt        # ⭐ w powiadomieniu, gdy w ofercie jest grunt / działka
     require_known: false
 
-  f_budynek: &f_budynek          # budynek / dom: od 60 m² w górę
+  f_budynek: &f_budynek          # budynek: od 60 m² w górę – zwykłe domy mieszkalne odrzucane
     price_min: 20000
     price_max: 400000
     area_min: 60
+    # z kategorii „domy” przechodzą tylko oferty, których tytuł/opis wskazuje na funkcję handlowo-usługową
+    include_any: ["usługow", "handlow", "komercyjn", "lokal użytkowy", "lokal usługowy", "lokal handlowy",
+                  "pawilon", "sklep", "budynek użytkowy", "biurow", "magazynow", "produkcyjn",
+                  "działalnoś", "warsztat", "hala"]
     exclude_any: *wyklucz
     highlight_any: *grunt
     require_known: false
@@ -59,7 +63,7 @@ searches:
       - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/malopolskie/sprzedaz?sort=newest"
     filters: *f_lokal
 
-  - name: "ŚL/MP · Budynek/dom 60+ m²"
+  - name: "ŚL/MP · Budynek usługowy 60+ m²"
     urls:
       - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/slaskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
       - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
@@ -92,7 +96,7 @@ searches:
       - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/sprzedaz?sort=newest"
     filters: *f_lokal
 
-  - name: "PL · Budynek/dom 60+ m²"
+  - name: "PL · Budynek usługowy 60+ m²"
     urls:
       - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/cala-polska?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
       - "https://www.olx.pl/nieruchomosci/domy/sprzedaz/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
