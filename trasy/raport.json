@@ -100,10 +100,56 @@
    20.2079069
   ]
  },
+ "east_gap_m": 3646,
+ "east_vd": [
+  49.4758459,
+  20.131029
+ ],
+ "east_swt": [
+  49.4432665,
+  20.1258326
+ ],
  "west_junction": [
   49.4698593,
   20.0202934
  ],
- "east_junction": null,
- "ERROR": "Traceback (most recent call last):\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 146, in <module>\n    main()\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 94, in main\n    vd_seq = chain(VD, [west, nearest(VD, P[\"waksmund\"]), nearest(VD, P[\"ostrowsko\"]), nearest(VD, P[\"lopuszna\"]), east])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/bot-nieruchomosci/bot-nieruchomosci/trasy/make_gpx.py\", line 90, in chain\n    if s is None: raise SystemExit(f\"brak połączenia {a}->{b}\")\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nSystemExit: brak połączenia (49.4769551, 20.133813)->None\n"
+ "east_junction": [
+  49.4758459,
+  20.131029
+ ],
+ "vd_km": 13.0,
+ "swt_km": 18.3,
+ "station_to_west_m": 537,
+ "min_dist_nowa_biala_m": 12,
+ "min_dist_gronkow_m": 186,
+ "min_dist_bor_m": 483,
+ "min_dist_waksmund_m": 171,
+ "min_dist_lopuszna_m": 223,
+ "min_dist_debno_m": 5447,
+ "brouter_km": 38.9,
+ "ascend_m": "105",
+ "surface_pct": {
+  "asphalt": 77.5,
+  "gravel": 10.1,
+  "compacted": 5.9,
+  "?": 2.2,
+  "fine_gravel": 1.4,
+  "pebblestone": 1.0,
+  "paving_stones": 1.0,
+  "concrete": 0.4,
+  "paved": 0.3,
+  "sett": 0.1
+ },
+ "highway_pct": {
+  "cycleway": 38.4,
+  "path": 15.1,
+  "residential": 13.0,
+  "track": 12.5,
+  "tertiary": 8.7,
+  "unclassified": 6.4,
+  "service": 5.5,
+  "footway": 0.3,
+  "secondary": 0.1
+ },
+ "on_trails_pct": 71.6
 }
