@@ -1,4 +1,5 @@
 # ===== Bot nieruchomości – konfiguracja =====
+# 0) Domy i działki: Kęty, Pisarzowice, Hecznarowice, Kobiernice, Czaniec, Porąbka
 # Lokale handlowe / pawilony / budynki do 400 tys. zł
 #   1) województwa śląskie + małopolskie
 #   2) cała Polska (oferty już wysłane w części 1 nie przychodzą drugi raz)
@@ -50,7 +51,34 @@ wspolne:
     highlight_any: *grunt
     require_known: false
 
+  f_kety: &f_kety                # domy i działki w wybranych miejscowościach (bez limitu ceny i metrażu)
+    location_any: ["kęty", "kętach", "kętami", "pisarzowic", "hecznarowic", "kobiernic",
+                   "czaniec", "czańc", "porąbk", "porąbce"]
+    exclude_any: *wyklucz
+    highlight_any: *grunt
+    require_known: false
+
 searches:
+  # ================= 0) KĘTY I OKOLICE – domy i działki =================
+  # (na początku listy, żeby oferty z tych miejscowości były sprawdzane przed innymi wyszukiwaniami)
+  - name: "Kęty i okolice · Dom"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie/oswiecimski?by=LATEST&direction=DESC"
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/slaskie/bielski?by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/domy/sprzedaz/kety/?search%5Bdist%5D=15&search%5Border%5D=created_at:desc"
+      - "https://gratka.pl/nieruchomosci/domy/kety/sprzedaz?sort=newest"
+      - "https://adresowo.pl/domy/kety/"
+    filters: *f_kety
+
+  - name: "Kęty i okolice · Działka"
+    urls:
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dzialka/malopolskie/oswiecimski?by=LATEST&direction=DESC"
+      - "https://www.otodom.pl/pl/wyniki/sprzedaz/dzialka/slaskie/bielski?by=LATEST&direction=DESC"
+      - "https://www.olx.pl/nieruchomosci/dzialki/sprzedaz/kety/?search%5Bdist%5D=15&search%5Border%5D=created_at:desc"
+      - "https://gratka.pl/nieruchomosci/dzialki-grunty/kety/sprzedaz?sort=newest"
+      - "https://adresowo.pl/dzialki/kety/"
+    filters: *f_kety
+
   # ================= 1) ŚLĄSKIE + MAŁOPOLSKIE =================
   - name: "ŚL/MP · Lokal 60–150 m²"
     urls:

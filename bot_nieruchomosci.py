@@ -185,6 +185,7 @@ def parse_offer(url, page_html):
     desc = meta("og:description", "description") or ""
     price = area = rooms = None
     full_desc = []   # pełny opis oferty (bez menu, polecanych ofert itp.)
+    loc = []         # lokalizacja oferty (miejscowość, gmina, powiat)
 
     # 1) Otodom i inne strony Next.js – dane w __NEXT_DATA__
     nd = soup.find("script", id="__NEXT_DATA__")
@@ -200,6 +201,8 @@ def parse_offer(url, page_html):
             if isinstance(ad, dict):
                 full_desc.append(BeautifulSoup(str(ad.get("description") or ""), "html.parser").get_text(" "))
                 full_desc.append(str(ad.get("title") or ""))
+                loc.append(json.dumps(ad.get("location") or {}, ensure_ascii=False))
+                loc.append(str(tgt.get("City") or ""))
         except Exception:
             pass
 
@@ -229,6 +232,16 @@ def parse_offer(url, page_html):
                           '[data-cy="adPageAdDescription"], [itemprop="description"]'):
         full_desc.append(el.get_text(" ", strip=True))
 
+    # OLX: miejscowość z danych strony (pierwsze wystąpienie = to ogłoszenie)
+    raw = page_html.replace('\\"', '"')
+    for key in ("cityName", "districtName", "regionName"):
+        m = re.search(r'"' + key + r'"\s*:\s*"([^"]{2,60})"', raw)
+        if m:
+            loc.append(m.group(1))
+    for el in soup.select('[data-testid="location-date"], [data-cy="ad-location"], [aria-label*="Adres"], '
+                          '[data-sentry-component="Location"], .breadcrumbs, nav[aria-label="breadcrumb"]'):
+        loc.append(el.get_text(" ", strip=True))
+
     # 3) Tekst strony (bez menu/stopki)
     for tag in soup(["script", "style", "nav", "footer", "header", "noscript"]):
         tag.decompose()
@@ -249,6 +262,7 @@ def parse_offer(url, page_html):
         "text": f"{title} {desc} {body}".lower(),
         # tylko tytuł + opis – do słów kluczowych, żeby nie łapać linków „podobne oferty”
         "core": htmllib.unescape(f"{title} {desc} {' '.join(full_desc)}").lower(),
+        "loc": htmllib.unescape(" ".join(loc)).lower(),
     }
 
 
@@ -287,6 +301,12 @@ def passes(o, f):
     for w in f.get("exclude_any") or []:
         if w.lower() in core:
             return False, f"zawiera „{w}”"
+    places = f.get("location_any") or []
+    if places:
+        where = f"{o.get('loc', '')} {core}"
+        if not any(w.lower() in where for w in places):
+            return False, "inna miejscowość"
+
     inc = f.get("include_any") or []
     if inc and not any(w.lower() in core for w in inc):
         return False, "brak słów z include_any (tytuł/opis)"
@@ -402,7 +422,7 @@ def run_once(cfg, db):
                 except Exception as ex:
                     log.warning("Nie udało się otworzyć %s (%s) – wysyłam sam link", u, ex)
                     o = {"url": u, "portal": portal_of(u) or "", "title": "Nowa oferta (brak szczegółów)",
-                         "desc": "", "price": None, "area": None, "rooms": None, "ppm2": None, "text": "", "core": ""}
+                         "desc": "", "price": None, "area": None, "rooms": None, "ppm2": None, "text": "", "core": "", "loc": ""}
                 ok, why = passes(o, s.get("filters"))
                 if ok:
                     send(cfg, offer_msg(o, name, (s.get("filters") or {}).get("highlight_any")))
