@@ -19,12 +19,22 @@ def main():
         time.sleep(1.2); j = r.json()
         return (float(j[0]["lat"]), float(j[0]["lon"])) if j else None
 
+    def overpass(q):
+        for i in range(6):
+            r = requests.post("https://overpass-api.de/api/interpreter", data={"data": q}, headers=UA, timeout=180)
+            if r.status_code == 200:
+                return r.json()["elements"]
+            time.sleep(20 * (i + 1))
+        raise RuntimeError(f"Overpass {r.status_code}: {r.text[:300]}")
+
+    RELS = {r["id"]: r for r in overpass("[out:json][timeout:120];relation(id:7343774,7547982);out geom;")}
+
     def rel_graph(rid):
-        q = f"[out:json][timeout:90];relation({rid});way(r);out geom;"
-        els = requests.post("https://overpass-api.de/api/interpreter", data={"data": q}, headers=UA, timeout=120).json()["elements"]
         g = {}
-        for w in els:
-            pts = [(round(p["lat"], 7), round(p["lon"], 7)) for p in w.get("geometry", [])]
+        for m in RELS[rid].get("members", []):
+            if m.get("type") != "way":
+                continue
+            pts = [(round(p["lat"], 7), round(p["lon"], 7)) for p in m.get("geometry", []) or []]
             for a, b in zip(pts, pts[1:]):
                 d = dist(a, b)
                 g.setdefault(a, []).append((b, d)); g.setdefault(b, []).append((a, d))
