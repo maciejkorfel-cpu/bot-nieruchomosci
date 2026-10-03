@@ -1,0 +1,193 @@
+{
+ "relations": [
+  {
+   "id": 6322363,
+   "name": "Rowerem po Podhalu - Ludźmierz-Obidowa",
+   "ref": "105"
+  },
+  {
+   "id": 7343774,
+   "name": "Velo Dunajec",
+   "ref": "VDuna"
+  },
+  {
+   "id": 7547982,
+   "name": "Historyczno-kulturowo-przyrodniczy Szlak Wokół Tatr",
+   "ref": "SWT"
+  },
+  {
+   "id": 10213468,
+   "name": "Velo Czorsztyn",
+   "ref": null
+  },
+  {
+   "id": 11295926,
+   "name": null,
+   "ref": null
+  },
+  {
+   "id": 20147715,
+   "name": "Ochotnica Challenge",
+   "ref": null
+  },
+  {
+   "id": 20147716,
+   "name": "Ochotnica Challenge - 10 Skałka",
+   "ref": null
+  },
+  {
+   "id": 20147718,
+   "name": "Ochotnica Challenge - 12 Jaszcze",
+   "ref": null
+  },
+  {
+   "id": 20147719,
+   "name": "Ochotnica Challenge - 13 Mostkowe",
+   "ref": null
+  },
+  {
+   "id": 20147720,
+   "name": "Ochotnica Challenge - 14 Studzionki",
+   "ref": null
+  },
+  {
+   "id": 20147721,
+   "name": "Ochotnica Challenge - 15 Holina",
+   "ref": null
+  },
+  {
+   "id": 20147722,
+   "name": "Ochotnica Challenge - 16 Przełęcz Knurowska",
+   "ref": null
+  }
+ ],
+ "n_points": {
+  "dunajec": 7689,
+  "tatr": 2394
+ },
+ "waypoints": [
+  {
+   "name": "Dworzec PKP Nowy Targ",
+   "geocoded": [
+    49.4735529,
+    20.0155285
+   ],
+   "snapped": [
+    49.4735529,
+    20.0155285
+   ],
+   "snap_m": 0
+  },
+  {
+   "name": "Waksmund",
+   "geocoded": [
+    49.4814653,
+    20.0785391
+   ],
+   "snapped": [
+    49.4826373,
+    20.0800728
+   ],
+   "snap_m": 171
+  },
+  {
+   "name": "Ostrowsko",
+   "geocoded": [
+    49.4753711,
+    20.0984496
+   ],
+   "snapped": [
+    49.479928,
+    20.1002841
+   ],
+   "snap_m": 524
+  },
+  {
+   "name": "Łopuszna",
+   "geocoded": [
+    49.478866,
+    20.1328968
+   ],
+   "snapped": [
+    49.4769551,
+    20.133813
+   ],
+   "snap_m": 223
+  },
+  {
+   "name": "Nowa Biała",
+   "geocoded": [
+    49.440669,
+    20.1439698
+   ],
+   "snapped": [
+    49.4407703,
+    20.1440213
+   ],
+   "snap_m": 12
+  },
+  {
+   "name": "Gronków",
+   "geocoded": [
+    49.4403034,
+    20.0873249
+   ],
+   "snapped": [
+    49.4419593,
+    20.0876422
+   ],
+   "snap_m": 186
+  },
+  {
+   "name": "Rezerwat Bór na Czerwonem",
+   "geocoded": [
+    49.4591233,
+    20.0390178
+   ],
+   "snapped": [
+    49.4579367,
+    20.0454369
+   ],
+   "snap_m": 483
+  },
+  {
+   "name": "Dworzec PKP Nowy Targ",
+   "geocoded": [
+    49.4735529,
+    20.0155285
+   ],
+   "snapped": [
+    49.4735529,
+    20.0155285
+   ],
+   "snap_m": 0
+  }
+ ],
+ "length_km": 31.3,
+ "ascend_m": "101",
+ "surface_pct": {
+  "asphalt": 68.1,
+  "gravel": 12.6,
+  "compacted": 7.4,
+  "?": 7.2,
+  "fine_gravel": 1.8,
+  "pebblestone": 1.2,
+  "paving_stones": 0.8,
+  "sett": 0.4,
+  "concrete": 0.2,
+  "paved": 0.1,
+  "ground": 0.0
+ },
+ "highway_pct": {
+  "cycleway": 36.9,
+  "residential": 20.0,
+  "track": 15.5,
+  "tertiary": 12.2,
+  "path": 9.6,
+  "unclassified": 4.0,
+  "service": 1.2,
+  "footway": 0.4,
+  "secondary": 0.2
+ },
+ "on_marked_trails_pct": 64.5
+}
