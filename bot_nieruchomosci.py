@@ -252,7 +252,7 @@ def parse_offer(url, page_html):
     if area is None:
         area = first(AREA_RE, head, 5) or first(AREA_RE, body, 5)
     if rooms is None:
-        rooms = first(ROOMS_RE, head, 1) or first(ROOMS_RE, body, 1)
+        rooms = first(ROOMS_RE, head, 1)
 
     return {
         "url": url, "portal": portal_of(url) or urlparse(url).netloc,
@@ -286,8 +286,13 @@ def passes(o, f):
     # Limit metrażu "od góry" nie dotyczy np. całych budynków (lista słów w configu)
     core = o.get("core") or o["text"]
     area_max = f.get("area_max")
-    if area_max is not None and any(w.lower() in core for w in f.get("area_max_ignore_if_any") or []):
+    title_l = (o.get("title") or "").lower()
+    if area_max is not None and any(w.lower() in title_l for w in f.get("area_max_ignore_if_any") or []):
         area_max = None
+
+    bad = [w for w in f.get("reject_title_if_any") or [] if w.lower() in title_l]
+    if bad and not any(w.lower() in title_l for w in f.get("reject_title_unless_any") or []):
+        return False, f"tytuł: „{bad[0]}”"
 
     for reason in (
         check(o["price"], f.get("price_min"), f.get("price_max"), "cena"),
@@ -306,6 +311,14 @@ def passes(o, f):
         where = f"{o.get('loc', '')} {core}"
         if not any(w.lower() in where for w in places):
             return False, "inna miejscowość"
+
+    inc_t = f.get("include_title_any") or []
+    t_inc = title_l
+    for junk in ("lokalizac", "budowlano-usługow", "budowlano usługow", "budowlano-uslugow", "budowlano uslugow",
+                 "budynkiem gospodarcz", "budynek gospodarcz", "budynkami gospodarcz"):
+        t_inc = t_inc.replace(junk, " ")
+    if inc_t and not any(w.lower() in t_inc for w in inc_t):
+        return False, "tytuł nie wskazuje na lokal/budynek usługowy"
 
     inc = f.get("include_any") or []
     if inc and not any(w.lower() in core for w in inc):
@@ -350,6 +363,14 @@ def offer_msg(o, search_name, highlight=None):
 
 
 # ---------------------------------------------------------------- baza
+def signature(o):
+    """Odcisk oferty niezależny od portalu: początek tytułu + cena."""
+    if not o.get("price"):
+        return None
+    t = re.sub(r"[^a-ząćęłńóśźż0-9]", "", (o.get("title") or "").lower().split("•")[0].split(" - otodom")[0])
+    return f"{t[:40]}|{int(o['price'])}"
+
+
 def db_open():
     db = sqlite3.connect(DB_PATH)
     db.executescript("""
@@ -357,6 +378,7 @@ def db_open():
                                          first_seen TEXT, sent INTEGER DEFAULT 0);
         CREATE TABLE IF NOT EXISTS scanned (search_url TEXT PRIMARY KEY);
         CREATE TABLE IF NOT EXISTS failures (search_url TEXT PRIMARY KEY, count INTEGER);
+        CREATE TABLE IF NOT EXISTS sent_sig (sig TEXT PRIMARY KEY, first_sent TEXT);
     """)
     return db
 
@@ -424,7 +446,12 @@ def run_once(cfg, db):
                     o = {"url": u, "portal": portal_of(u) or "", "title": "Nowa oferta (brak szczegółów)",
                          "desc": "", "price": None, "area": None, "rooms": None, "ppm2": None, "text": "", "core": "", "loc": ""}
                 ok, why = passes(o, s.get("filters"))
+                sig = signature(o)
+                if ok and sig and db.execute("SELECT 1 FROM sent_sig WHERE sig=?", (sig,)).fetchone():
+                    ok, why = False, "ta sama oferta była już wysłana z innego portalu"
                 if ok:
+                    if sig:
+                        db.execute("INSERT OR IGNORE INTO sent_sig VALUES (?,?)", (sig, now))
                     send(cfg, offer_msg(o, name, (s.get("filters") or {}).get("highlight_any")))
                     db.execute("UPDATE seen SET sent=1 WHERE key=?", (offer_key(u),))
                     db.commit()

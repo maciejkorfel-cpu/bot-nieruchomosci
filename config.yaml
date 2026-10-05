@@ -16,9 +16,15 @@ wspolne:
   wyklucz: &wyklucz ["licytacja", "komornicz", "1/2 udziału", "udział 1/2", "wynajmę lokal", "oddam w dzierżawę",
                      "kontener", "producent", "leasing", "szybka realizacja", "na zamówienie", "moduł"]
   grunt: &grunt ["działk", "grunt", "wolnostoj", "z ziemią", "plac ", "parking własny"]
-  budynek: &budynek ["budynek", "kamienica", "obiekt", "wolnostoj", "cały pawilon"]
+  budynek: &budynek ["budynek", "kamienica", "obiekt", "wolnostoj", "cały pawilon"]   # sprawdzane w tytule
+
+  nie_dzialki: &nie_dzialki ["działka", "działki", "działkę", "grunt ", "grunty", "teren inwestycyjny", "teren pod",
+                             "mieszkanie", "mieszkania", "kawalerka", "odstąpię", "odstapie", "odstąpienie"]
+  chyba_ze: &chyba_ze ["lokal", "pawilon", "budynek", "sklep", "hala", "dom ", "usług", "handl", "kamienica", "obiekt"]
 
   f_lokal: &f_lokal              # lokal / pawilon: 60–150 m² (cały budynek może być większy)
+    reject_title_if_any: *nie_dzialki      # sama działka/grunt w tytule → odrzuć
+    reject_title_unless_any: *chyba_ze     # …chyba że tytuł mówi też o lokalu/budynku
     price_min: 20000             # odcina ogłoszenia najmu (czynsz miesięczny)
     price_max: 400000
     area_min: 60
@@ -28,25 +34,29 @@ wspolne:
     highlight_any: *grunt        # ⭐ w powiadomieniu, gdy w ofercie jest grunt / działka
     require_known: false
 
-  f_budynek: &f_budynek          # budynek: od 60 m² w górę – zwykłe domy mieszkalne odrzucane
+  f_budynek: &f_budynek          # budynek: od 60 m² w górę – tylko gdy TYTUŁ wskazuje funkcję usługowo-handlową
+    reject_title_if_any: *nie_dzialki
+    reject_title_unless_any: *chyba_ze
     price_min: 20000
     price_max: 400000
     area_min: 60
-    # z kategorii „domy” przechodzą tylko oferty, których tytuł/opis wskazuje na funkcję handlowo-usługową
-    include_any: ["usługow", "handlow", "komercyjn", "lokal użytkowy", "lokal usługowy", "lokal handlowy",
-                  "pawilon", "sklep", "budynek użytkowy", "biurow", "magazynow", "produkcyjn",
-                  "działalnoś", "warsztat", " hala ", " hali ", "halę"]
+    include_title_any: ["usługow", "uslugow", "handlow", "komercyjn", "lokal", "pawilon", "sklep", "biurow",
+                        "magazyn", "produkcyjn", "warsztat", "hala", "hali", "kamienic", "budynek", "budynki usług", "budynki handl", "2 budynki",
+                        "obiekt", "gastronom", "restaurac", "pensjonat", "pod działalność", "z działalnością",
+                        "na działalność", "inwestycyjn"]
     exclude_any: *wyklucz
     highlight_any: *grunt
     require_known: false
 
   f_pawilon: &f_pawilon          # wyszukiwanie po słowie (OLX) – oferta musi wspominać pawilon / lokal handlowy
+    reject_title_if_any: *nie_dzialki      # sama działka/grunt w tytule → odrzuć
+    reject_title_unless_any: *chyba_ze     # …chyba że tytuł mówi też o lokalu/budynku
     price_min: 20000
     price_max: 400000
     area_min: 60
     area_max: 150
     area_max_ignore_if_any: *budynek
-    include_any: ["pawilon", "lokal handlowy", "lokal usługowy", "lokal użytkowy", "sklep", "budynek handlowy", "budynek usługowy"]
+    include_title_any: ["pawilon", "lokal", "sklep", "budynek handlow", "budynek usługow", "handlow", "usługow"]
     exclude_any: *wyklucz
     highlight_any: *grunt
     require_known: false
