@@ -306,6 +306,12 @@ def passes(o, f):
     for w in f.get("exclude_any") or []:
         if w.lower() in core:
             return False, f"zawiera „{w}”"
+    # województwo: sprawdzane, gdy portal podaje lokalizację (np. OLX/Otodom potrafią
+    # wstawić na stronę regionu promowane oferty z innych części Polski)
+    rx = f.get("region_regex")
+    if rx and o.get("loc") and not re.search(rx, o["loc"]):
+        return False, "inne województwo"
+
     places = f.get("location_any") or []
     if places:
         where = f"{o.get('loc', '')} {core}"

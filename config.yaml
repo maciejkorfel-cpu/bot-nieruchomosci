@@ -23,6 +23,7 @@ wspolne:
   chyba_ze: &chyba_ze ["lokal", "pawilon", "budynek", "sklep", "hala", "dom ", "usług", "handl", "kamienica", "obiekt"]
 
   f_lokal: &f_lokal              # lokal / pawilon: 60–150 m² (cały budynek może być większy)
+    region_regex: '(?<![a-ząćęłńóśźż])(śląskie|slaskie|małopolskie|malopolskie)'   # tylko te dwa województwa (nie dolnośląskie)
     reject_title_if_any: *nie_dzialki      # sama działka/grunt w tytule → odrzuć
     reject_title_unless_any: *chyba_ze     # …chyba że tytuł mówi też o lokalu/budynku
     price_min: 20000             # odcina ogłoszenia najmu (czynsz miesięczny)
@@ -49,6 +50,7 @@ wspolne:
     require_known: false
 
   f_pawilon: &f_pawilon          # wyszukiwanie po słowie (OLX) – oferta musi wspominać pawilon / lokal handlowy
+    region_regex: '(?<![a-ząćęłńóśźż])(śląskie|slaskie|małopolskie|malopolskie)'   # tylko te dwa województwa (nie dolnośląskie)
     reject_title_if_any: *nie_dzialki      # sama działka/grunt w tytule → odrzuć
     reject_title_unless_any: *chyba_ze     # …chyba że tytuł mówi też o lokalu/budynku
     price_min: 20000
@@ -126,15 +128,7 @@ searches:
       - "https://www.olx.pl/nieruchomosci/malopolskie/q-lokal-handlowy/?search%5Border%5D=created_at:desc"
     filters: *f_pawilon
 
-  # ================= 2) CAŁA POLSKA =================
-  - name: "PL · Lokal 60–150 m²"
-    urls:
-      - "https://www.otodom.pl/pl/wyniki/sprzedaz/lokal/cala-polska?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
-      - "https://www.olx.pl/nieruchomosci/biura-lokale/sprzedaz/?search%5Bfilter_float_price:to%5D=400000&search%5Border%5D=created_at:desc"
-      - "https://www.domiporta.pl/lokal-uzytkowy/sprzedam"
-      - "https://gratka.pl/nieruchomosci/lokale-uzytkowe/sprzedaz?sort=newest"
-    filters: *f_lokal
-
+  # ================= 2) CAŁA POLSKA – tylko budynki usługowe =================
   - name: "PL · Budynek usługowy 60+ m²"
     urls:
       - "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/cala-polska?priceMax=400000&areaMin=60&by=LATEST&direction=DESC"
@@ -144,9 +138,3 @@ searches:
       - "https://www.morizon.pl/domy/"
       - "https://adresowo.pl/domy/"
     filters: *f_budynek
-
-  - name: "PL · Pawilon (słowo w ofercie)"
-    urls:
-      - "https://www.olx.pl/nieruchomosci/q-pawilon/?search%5Border%5D=created_at:desc"
-      - "https://www.olx.pl/nieruchomosci/q-lokal-handlowy/?search%5Border%5D=created_at:desc"
-    filters: *f_pawilon
