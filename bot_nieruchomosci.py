@@ -364,11 +364,14 @@ def offer_msg(o, search_name, highlight=None):
 
 # ---------------------------------------------------------------- baza
 def signature(o):
-    """Odcisk oferty niezależny od portalu: początek tytułu + cena."""
+    """Odcisk oferty niezależny od portalu (Otodom i OLX często publikują to samo):
+    cena + metraż, a gdy brak metrażu – cena + początek tytułu."""
     if not o.get("price"):
         return None
-    t = re.sub(r"[^a-ząćęłńóśźż0-9]", "", (o.get("title") or "").lower().split("•")[0].split(" - otodom")[0])
-    return f"{t[:40]}|{int(o['price'])}"
+    if o.get("area"):
+        return f"{int(o['price'])}|{round(o['area'])}"
+    t = re.sub(r"[^a-ząćęłńóśźż0-9]", "", (o.get("title") or "").lower())
+    return f"{int(o['price'])}|{t[:25]}"
 
 
 def db_open():
